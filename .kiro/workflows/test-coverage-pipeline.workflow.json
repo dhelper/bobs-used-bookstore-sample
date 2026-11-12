@@ -1,0 +1,85 @@
+{
+  "name": "test-coverage-pipeline",
+  "description": "Analyze test gaps, gate on build, write tests in parallel, validate, and loop with an independent reviewer until approved.",
+  "inputs": {
+    "scope": "prompt"
+  },
+  "steps": [
+    {
+      "type": "step",
+      "id": "analyze",
+      "agent": "test-gap-analyzer",
+      "prompt": "Analyze the Domain project for missing unit tests. Scope: {{scope}}. Write the gap report to .kiro/analysis/test-gaps.md. Finish with send_message severity success once the report is written.",
+      "artifacts": {
+        "gaps": ".kiro/analysis/test-gaps.md"
+      }
+    },
+    {
+      "type": "step",
+      "id": "build-gate",
+      "agent": "wf-coder",
+      "prompt": "Run `dotnet build BobsBookstore.sln`. If it fails, fix only compile errors and rebuild. Do not change behavior and do not write tests. Finish with send_message severity success when the build is green, or severity error with the build output if you cannot fix it."
+    },
+    {
+      "type": "repeat",
+      "id": "write-and-review",
+      "maxIterations": 3,
+      "onMaxIterations": "pause",
+      "stopCondition": {
+        "fileCheck": {
+          "path": ".kiro/workflow-output/review.json",
+          "jsonPath": "$.approved",
+          "value": true
+        }
+      },
+      "steps": [
+        {
+          "type": "parallel",
+          "id": "writers",
+          "joinPolicy": "allSettled",
+          "branches": [
+            {
+              "type": "step",
+              "id": "writer-1",
+              "agent": "unit-test-writer",
+              "prompt": "Read the gap report at {{artifacts.gaps}}. You own ONLY the batches whose batch number modulo 3 equals 1 (writer-1). For each batch you own, create or update its test file. If .kiro/workflow-output/review.md exists, first fix the issues it lists for your files. Do not touch files owned by other writers. Skip validation - the workflow validates at the end."
+            },
+            {
+              "type": "step",
+              "id": "writer-2",
+              "agent": "unit-test-writer",
+              "prompt": "Read the gap report at {{artifacts.gaps}}. You own ONLY the batches whose batch number modulo 3 equals 2 (writer-2). For each batch you own, create or update its test file. If .kiro/workflow-output/review.md exists, first fix the issues it lists for your files. Do not touch files owned by other writers. Skip validation - the workflow validates at the end."
+            },
+            {
+              "type": "step",
+              "id": "writer-3",
+              "agent": "unit-test-writer",
+              "prompt": "Read the gap report at {{artifacts.gaps}}. You own ONLY the batches whose batch number modulo 3 equals 0 (writer-3). For each batch you own, create or update its test file. If .kiro/workflow-output/review.md exists, first fix the issues it lists for your files. Do not touch files owned by other writers. Skip validation - the workflow validates at the end."
+            }
+          ]
+        },
+        {
+          "type": "step",
+          "id": "validate",
+          "agent": "wf-coder",
+          "prompt": "Run `dotnet test BobsBookstore.sln`. If tests fail, fix the TEST code only - never production code - and rerun. Write a short summary (tests added, passed, failed, and any failures) to .kiro/workflow-output/test-results.md.",
+          "artifacts": {
+            "results": ".kiro/workflow-output/test-results.md"
+          }
+        },
+        {
+          "type": "step",
+          "id": "review",
+          "agent": "test-reviewer",
+          "prompt": "Review the new and changed unit tests. Gap report: {{artifacts.gaps}}. Test results: {{artifacts.results}}. Write .kiro/workflow-output/review.md and .kiro/workflow-output/review.json as your instructions describe."
+        }
+      ]
+    },
+    {
+      "type": "step",
+      "id": "report",
+      "agent": "wf-planner",
+      "prompt": "Do not edit files. Using {{artifacts.gaps}}, {{artifacts.results}} and .kiro/workflow-output/review.md, report: batches covered, tests added, pass/fail, review verdict, and how many review iterations it took."
+    }
+  ]
+}
