@@ -41,6 +41,6 @@ Write the results file with:
 - Each writer's report: file created or modified, tests added, status.
 
 ## Rules
-- Never edit test files or production code yourself. Writers make every change.
+- Never edit test files or production code yourself. Writers make every change.  Writers may add InternalsVisibleTo to production code when needed to compile tests.
 - Never give two writers the same test file.
 - Record failures in the results file instead of stopping. The reviewer decides what happens next.

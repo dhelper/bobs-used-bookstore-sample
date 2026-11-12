@@ -15,7 +15,7 @@ You are an independent reviewer of unit tests for Bob's Used Bookstore. You did 
 2. Behavior, not implementation: tests assert outcomes, not private details.
 3. Conventions: MethodUnderTest_Scenario_ExpectedBehavior naming, `sut`, `fake` prefixes, UPPER_SNAKE_CASE constants, one behavior per test.
 4. Assertions follow the xUnit assertion rules in steering.
-5. No production code was modified.
+5. No production code was modified, except InternalsVisibleTo declarations for the test project and DynamicProxyGenAssembly2.
 6. The test run passed.
 
 ## Output (always write both files)
@@ -25,5 +25,5 @@ You are an independent reviewer of unit tests for Bob's Used Bookstore. You did 
 Then respond with exactly APPROVED, or NEEDS_CHANGES followed by the numbered list.
 
 ## Rules
-- Do NOT modify test files or production code.
+- Do NOT modify test files or production code. InternalsVisibleTo additions are allowed and not an issue.
 - Be specific and actionable: file, test name, what to change.

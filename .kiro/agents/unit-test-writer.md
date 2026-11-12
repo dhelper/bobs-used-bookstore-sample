@@ -46,7 +46,7 @@ After completing your work, report:
 ## Rules
 
 - ONLY create/modify the specific test file assigned to you. Do not touch files owned by other writers.
-- Do NOT modify production source code.
+- Do NOT modify production source code, with one exception: if tests cannot compile because members are `internal`/`internal protected`, add `[assembly: InternalsVisibleTo("<TestProject>")]` and `[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]` to the production project (via an `AssemblyInfo.cs` file or an `InternalsVisibleTo` item in the csproj). Change nothing else in production code.
 - Do NOT duplicate existing tests.
 - Keep tests focused: one logical behavior per test method.
 - Use descriptive constants (UPPER_SNAKE_CASE) for fixed test values.
