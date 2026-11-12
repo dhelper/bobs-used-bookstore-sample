@@ -1,0 +1,49 @@
+{
+  "name": "test-write-review-loop",
+  "description": "Run test gap analysis, fan out one unit-test-writer per test file through unit-test-dispatcher, run the tests, and have test-reviewer approve. A rejected review starts a fix cycle that re-runs only the writers whose files have issues.",
+  "steps": [
+    {
+      "type": "step",
+      "id": "analyze",
+      "agent": "test-gap-analyzer",
+      "modelId": "claude-sonnet-5.5",
+      "onModelNotOffered": "inherit",
+      "prompt": "Analyze the Domain project at /Users/dhelper/Dev/Kiro/tech-track-q4-2026/bobs-used-bookstore-sample/app/Bookstore.Domain for missing unit tests. Its test project is /Users/dhelper/Dev/Kiro/tech-track-q4-2026/bobs-used-bookstore-sample/app/Bookstore.Domain.Tests. Write the gap report to /Users/dhelper/Dev/Kiro/tech-track-q4-2026/bobs-used-bookstore-sample/.kiro/analysis/test-gaps.md.",
+      "artifacts": {
+        "gaps": "/Users/dhelper/Dev/Kiro/tech-track-q4-2026/bobs-used-bookstore-sample/.kiro/analysis/test-gaps.md"
+      }
+    },
+    {
+      "type": "repeat",
+      "id": "write-and-review",
+      "maxIterations": 3,
+      "onMaxIterations": "pause",
+      "stopCondition": {
+        "fileCheck": {
+          "path": "/Users/dhelper/Dev/Kiro/tech-track-q4-2026/bobs-used-bookstore-sample/.kiro/workflow-output/review.json",
+          "jsonPath": "approved",
+          "value": true
+        }
+      },
+      "steps": [
+        {
+          "type": "step",
+          "id": "write",
+          "agent": "unit-test-dispatcher",
+          "modelId": "claude-sonnet-5.5",
+          "onModelNotOffered": "inherit",
+          "prompt": "Gap report: {{artifacts.gaps}}. Review file: /Users/dhelper/Dev/Kiro/tech-track-q4-2026/bobs-used-bookstore-sample/.kiro/workflow-output/review.md. Test project: /Users/dhelper/Dev/Kiro/tech-track-q4-2026/bobs-used-bookstore-sample/app/Bookstore.Domain.Tests/Bookstore.Domain.Tests.csproj. Results file: /Users/dhelper/Dev/Kiro/tech-track-q4-2026/bobs-used-bookstore-sample/.kiro/workflow-output/test-results.md. Dispatch the writers, run the tests, and record the results as your instructions describe. When you finish, always call send_message with severity success, even if the build or tests fail.",
+          "artifacts": {
+            "results": "/Users/dhelper/Dev/Kiro/tech-track-q4-2026/bobs-used-bookstore-sample/.kiro/workflow-output/test-results.md"
+          }
+        },
+        {
+          "type": "step",
+          "id": "review",
+          "agent": "test-reviewer",
+          "prompt": "Review the new and changed unit tests. Gap report: {{artifacts.gaps}}. Test results, including the files each writer changed: {{artifacts.results}}. Write /Users/dhelper/Dev/Kiro/tech-track-q4-2026/bobs-used-bookstore-sample/.kiro/workflow-output/review.md and /Users/dhelper/Dev/Kiro/tech-track-q4-2026/bobs-used-bookstore-sample/.kiro/workflow-output/review.json as your instructions describe. Convey your verdict only by writing review.json. When you finish, always call send_message with severity success, whatever the verdict."
+        }
+      ]
+    }
+  ]
+}
