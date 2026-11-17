@@ -166,6 +166,14 @@ In addition to the AWS resources that are created and used by the [_Integrated_ 
 
 > **NOTE:** The first time you launch the application with the _Integrated_ profile or via a full deployment (see below for a full deployment) you will be prompted to sign in and update the admin user password. See the [User Authentication](#user-authentication) section for details.
 
+## Health check
+
+The web application exposes a `/health` endpoint that requires no authentication. It returns HTTP 200 with a JSON body containing the assembly version:
+
+```json
+{"status": "ok", "version": "1.0.0.0"}
+```
+
 ## User authentication
 
 When the application is launched with the _Integrated_ profile or as a full deployment it uses Amazon Cognito user pools for user authentication and Amazon Cognito user groups for role-based authorization. The first time you login to the application you will be asked to update the admin password.

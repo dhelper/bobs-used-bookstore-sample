@@ -1,4 +1,8 @@
+using System.Reflection;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 
 using Bookstore.Web.Startup;
 
@@ -15,5 +19,11 @@ builder.ConfigureDependencyInjection();
 var app = builder.Build();
 
 await app.ConfigureMiddlewareAsync();
+
+app.MapGet("/health", [AllowAnonymous] () => Results.Json(new
+{
+    status = "ok",
+    version = Assembly.GetEntryAssembly()?.GetName().Version?.ToString()
+}));
 
 app.Run();
