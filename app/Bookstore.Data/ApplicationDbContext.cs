@@ -19,6 +19,8 @@ namespace Bookstore.Data
 
         public DbSet<Book> Book { get; set; }
 
+        public DbSet<BookRating> BookRating { get; set; }
+
         public DbSet<Customer> Customer { get; set; }
 
         public DbSet<Order> Orders { get; set; }
@@ -41,6 +43,10 @@ namespace Bookstore.Data
             modelBuilder.Entity<Book>().HasOne(x => x.BookType).WithMany().HasForeignKey(x => x.BookTypeId).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Book>().HasOne(x => x.Genre).WithMany().HasForeignKey(x => x.GenreId).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Book>().HasOne(x => x.Condition).WithMany().HasForeignKey(x => x.ConditionId).OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BookRating>().HasOne(x => x.Book).WithMany().HasForeignKey(x => x.BookId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<BookRating>().HasOne(x => x.Customer).WithMany().HasForeignKey(x => x.CustomerId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<BookRating>().HasIndex(x => new { x.BookId, x.CustomerId }).IsUnique();
 
             modelBuilder.Entity<Offer>().HasOne(x => x.Publisher).WithMany().HasForeignKey(x => x.PublisherId).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Offer>().HasOne(x => x.BookType).WithMany().HasForeignKey(x => x.BookTypeId).OnDelete(DeleteBehavior.Restrict);

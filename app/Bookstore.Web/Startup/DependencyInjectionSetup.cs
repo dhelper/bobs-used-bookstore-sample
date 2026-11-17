@@ -24,6 +24,7 @@ namespace Bookstore.Web.Startup
         {
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddTransient<IBookService, BookService>();
+            builder.Services.AddTransient<IBookRatingService, BookRatingService>();
             builder.Services.AddTransient<IOrderService, OrderService>();
             builder.Services.AddTransient<IReferenceDataService, ReferenceDataService>();
             builder.Services.AddTransient<IOfferService, OfferService>();
@@ -35,6 +36,7 @@ namespace Bookstore.Web.Startup
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<IAddressRepository, AddressRepository>();
             builder.Services.AddScoped<IBookRepository, BookRepository>();
+            builder.Services.AddScoped<IBookRatingRepository, BookRatingRepository>();
             builder.Services.AddScoped<IOfferRepository, OfferRepository>();
             builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();

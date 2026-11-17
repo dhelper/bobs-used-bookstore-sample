@@ -41,6 +41,19 @@
                                     <th scope="col">Price</th>
                                     <td>@Model.MinPrice.ToString("C")</td>
                                 </tr>
+                                <tr>
+                                    <th scope="col">Rating</th>
+                                    <td>
+                                        @if (Model.RatingCount > 0)
+                                        {
+                                            <span>★ @Model.AverageRating.ToString("0.0") / 5 (@Model.RatingCount @(Model.RatingCount == 1 ? "rating" : "ratings"))</span>
+                                        }
+                                        else
+                                        {
+                                            <span>No ratings yet</span>
+                                        }
+                                    </td>
+                                </tr>
                                 @if (string.IsNullOrEmpty(Model.Summary))
                                 {
                                     <tr>
@@ -59,6 +72,29 @@
                             </table>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form asp-action="Rate" method="post" class="form-inline">
+                            <input type="hidden" name="bookId" value="@Model.BookId" />
+                            <label for="rating" class="me-2">@(Model.UserRating.HasValue ? "Update your rating" : "Rate this book")</label>
+                            <select id="rating" name="rating" class="form-select d-inline-block w-auto me-2">
+                                @for (var i = 1; i <= 5; i++)
+                                {
+                                    <option value="@i" selected="@(Model.UserRating == i)">@i</option>
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-primary">@(Model.UserRating.HasValue ? "Update" : "Submit")</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Log in to rate this book.</span>
+                    }
                 </div>
             </div>
 
