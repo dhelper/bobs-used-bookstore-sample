@@ -54,6 +54,17 @@
                                         <p class="text-dark">@Html.DisplayFor(modelitem => item.BookName)</p>
                                     </center>
 
+                                    <p class="small text-muted">
+                                        @if (item.RatingCount > 0)
+                                        {
+                                            <span>★ @item.AverageRating.ToString("0.0") (@item.RatingCount @(item.RatingCount == 1 ? "rating" : "ratings"))</span>
+                                        }
+                                        else
+                                        {
+                                            <span>No ratings yet</span>
+                                        }
+                                    </p>
+
                                     @if (item.Quantity > 0)
                                     {
                                         <h6>

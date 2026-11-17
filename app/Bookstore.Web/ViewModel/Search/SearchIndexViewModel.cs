@@ -25,7 +25,9 @@ namespace Bookstore.Web.ViewModel.Search
                     BookName = book.Name,
                     ImageUrl = book.CoverImageUrl,
                     Price = book.Price,
-                    Quantity = book.Quantity
+                    Quantity = book.Quantity,
+                    AverageRating = book.AverageRating,
+                    RatingCount = book.RatingCount
                 });
             }
 
@@ -67,5 +69,9 @@ namespace Bookstore.Web.ViewModel.Search
         public decimal Price { get; set; }
 
         public int Quantity { get; set; }
+
+        public double AverageRating { get; set; }
+
+        public int RatingCount { get; set; }
     }
 }

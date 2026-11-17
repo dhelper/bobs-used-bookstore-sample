@@ -62,6 +62,12 @@ namespace Bookstore.Domain.Books
 
         public int Quantity { get; set; }
 
+        /// <summary>Average of all customer ratings (1-5); 0 when there are no ratings.</summary>
+        public double AverageRating { get; set; }
+
+        /// <summary>Number of customers who have rated this book.</summary>
+        public int RatingCount { get; set; }
+
         public bool IsInStock => Quantity > 0;
 
         public bool IsLowInStock => Quantity <= LowBookThreshold;

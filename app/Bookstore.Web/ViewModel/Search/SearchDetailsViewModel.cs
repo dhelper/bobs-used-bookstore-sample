@@ -36,6 +36,12 @@ namespace Bookstore.Web.ViewModel.Search
 
         public string? Summary { get; set; }
 
+        public double AverageRating { get; set; }
+
+        public int RatingCount { get; set; }
+
+        public int? UserRating { get; set; }
+
         public SearchDetailsViewModel(Book book)
         {
             BookName = book.Name;
@@ -50,6 +56,8 @@ namespace Bookstore.Web.ViewModel.Search
             Quantity = book.Quantity;
             BookId = book.Id;
             Summary = book.Summary;
+            AverageRating = book.AverageRating;
+            RatingCount = book.RatingCount;
         }
     }
 }
